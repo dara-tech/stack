@@ -1,0 +1,20 @@
+{
+    "home": "Home",
+    "category": "Category",
+    "contact":"Contact",
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "post_title": "Post Title",
+  "enter_post_title": "Enter Post Title",
+  "pick_category": "Pick a category",
+  "video_link": "Video Link",
+  "enter_video_link": "Enter Video Link",
+  "all_fields_required": "All fields are required",
+  "post_placeholder": "Write...",
+  "submit_post":"Submit Post",
+    "language": {
+      "english": "English",
+      "khmer": "ភាសាខ្មែរ"
+    }
+  }
+  

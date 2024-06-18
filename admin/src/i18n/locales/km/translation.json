@@ -1,0 +1,71 @@
+{
+
+    "Dara":"តារា",
+    "Blog":"ប្លុក",
+    "home": "ទំព័រដើម",
+    "contact": "ទំនាក់ទំនង",
+    "Contact": "ទំនាក់ទំនង",
+    "Privacy Policy":"ច្បាប់",
+    "Terms of Service":"សេវាកម្ម",
+    "about": "អំពីយើង",
+    "category": "ប្រភេទ",
+    "signIn": "ចូល",
+    "signUp": "ចុះឈ្មោះ",
+    "All rights reserved.":"រក្សាសិទ្ធិគ្រប់យ៉ាង",
+    "Dashboard":"ផ្ទាំងបាណូបរិធាន",
+    "Analytics":"ការវិភាគ",
+    "Content":"មាតិការ",
+    "Followers":"អ្នកតាមដាន",
+    "Create Post":"បង្កើតការផុស",
+    "Settings":"មុខងារ",
+    "MENU": "មីនុយ",
+    "Joined Date":"កាលបរិច្ឆេទចុះ",
+    "No Data Found.":"មិនមានទិន្នន័យ",
+    "Post Title" :"ចំណងជើង",
+    "Views": "ចំនួនបានទស្សនា",
+    "Post Date":"កាលបរិច្ឆេទ",
+    "View Stats for last 28 days":"ចំនួនអ្នកទស្សនា ២៨ ថ្ងៃចុងក្រោយ",
+    "Recent Followers":"អ្នកដែលបានតាមដានថ្មីៗនេះ",
+    "Recent 5 Content":"៥ ផុសថ្មីៗនេះ",
+    "Name":"ឈ្មោះ",
+    "Account":"គណនី",
+    "Followers Stats for last": "អ្នកដែលបានតាមដានកន្លងមកក្នុងរយៈពេល",
+    "View Stats for last":"អ្នកដែលបានទស្សនាកន្លងមកក្នុងរយៈពេល",
+    "TOTAL POST": "ចំនួនផុសសរុប",
+    "FOLLOWERS":"អ្នកតាមដានសរុប",
+    "TOTAL VIEWS": "អ្នកដែលបានទស្សនាសរុប",
+    "TOTAL WRITERS": "អ្នកនិពន្ធសរុប",
+    "Compare to previous month": "ប្រៀបធៀននឹងខែមុន",
+    "7 days":"៧ ថ្ងៃ",
+    "28 days":"២៨ ថ្ងៃ",
+    "100 days": "១០០ ថ្ងៃ",
+    "365 days":"៣៦៥ ថ្ងៃ",
+    
+      "post_title": "ចំណងជើង​ប្រកាស",
+      "enter_post_title": "បញ្ចូល​ចំណងជើង​ប្រកាស",
+
+      "pick_category": "ជ្រើសរើសប្រភេទ",
+      "video_link": "តំណភ្ជាប់​វីដេអូ",
+      "enter_video_link": "បញ្ចូល​តំណភ្ជាប់​វីដេអូ",
+      "all_fields_required": "ក្រឡោនទាំងអស់​​ត្រូវតែ​បញ្ចូល",
+      "post_placeholder": "...",
+      "submit_post":"ដាក់បញ្ជូល់",
+      "Delete Post":"លុបផុស",
+      "Category":"ផ្នែក",
+      "Comments":"មតិយោបល់",
+      "Status":"ស្ថានភាព",
+      "Action":"កំណត់សកម្មភាព",
+
+    
+
+
+
+
+
+
+    "language": {
+      "english": "អង់គ្លេស",
+      "khmer": "ខ្មែរ"
+    }
+  }
+  
