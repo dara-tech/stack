@@ -15,6 +15,10 @@ import SubmitButtonComponent from "../components/SubmitButtonComponent";
 import GenerateTitlesComponent from "../components/GenerateTitlesComponent";
 import GenContent from "../components/GenContent";
 import MainContent from "../components/MainContent";
+import Trend from '../components/Trend';
+
+
+
 
 const WritePost = () => {
   const { colorScheme } = useMantineColorScheme();
@@ -78,6 +82,8 @@ const WritePost = () => {
 
   return (
     <>
+    
+      <Trend setEditorContent={setEditorContent} />
       <TextInputComponent value={title} onChange={(e) => setTitle(e.target.value)} />
       <GenerateTitlesComponent topic={title} onSelectTitle={setTitle} />
       <SelectComponent value={category} onChange={(val) => setCategory(val)} />

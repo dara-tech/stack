@@ -8,13 +8,15 @@ import {
   NumberInput,
   Group,
   CopyButton,
-  ActionIcon
+  ActionIcon,
+  Select,
+  Progress,
+  Container,
 } from "@mantine/core";
-import { Check, X, Copy, Refresh, Trash } from "tabler-icons-react"; // Added Trash icon
+import { Check, X, Copy, Refresh, Trash } from "tabler-icons-react";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-// Access your API key directly.
-const apiKey = process.env.REACT_APP_GOOGLE_API_KEY; // Replace with your actual API key
+const apiKey = process.env.REACT_APP_GOOGLE_API_KEY;
 const genAI = new GoogleGenerativeAI(apiKey);
 
 const GenerateTitlesComponent = ({ topic, onSelectTitle }) => {
@@ -24,6 +26,15 @@ const GenerateTitlesComponent = ({ topic, onSelectTitle }) => {
   const [titleCount, setTitleCount] = useState(5);
   const [context, setContext] = useState("");
   const [selectedTitle, setSelectedTitle] = useState(null);
+  const [model, setModel] = useState("gemini-1.5-flash");
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    // Clear titles and selected title on initial component mount
+    setGeneratedTitles([]);
+    setSelectedTitle(null);
+    localStorage.removeItem("selectedTitle");
+  }, []);
 
   useEffect(() => {
     const savedTitle = localStorage.getItem("selectedTitle");
@@ -33,36 +44,47 @@ const GenerateTitlesComponent = ({ topic, onSelectTitle }) => {
     }
   }, [onSelectTitle]);
 
+  const simulateProgress = () => {
+    setProgress(0);
+    for (let i = 0; i <= 100; i += 10) {
+      setTimeout(() => setProgress(i), i * 50);
+    }
+  };
+
   const generateContent = async () => {
     if (!topic) {
       setError("Please enter a topic before generating titles.");
       return;
     }
- 
+
     setLoading(true);
     setError(null);
+    simulateProgress();
+
     try {
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+      const modelInstance = genAI.getGenerativeModel({ model });
       const prompt = `Generate ${titleCount} advanced blog post titles for: ${topic}. ${
         context ? `Context: ${context}` : ""
       }`;
-      const result = await model.generateContent(prompt);
-      const response = result.response;
-      const text = await response.text(); 
 
-      let titles = text.split("\n").filter(title => title.trim() !== ""); // Split and filter non-empty titles
+      const result = await modelInstance.generateContent(prompt);
+      const response = result.response;
+      const text = await response.text();
+
+      const titles = text.split("\n").filter((title) => title.trim() !== "");
       setGeneratedTitles(titles);
-      setSelectedTitle(null); // Reset selected title on new generation
+      setSelectedTitle(null);
     } catch (error) {
       console.error("Error generating content:", error);
       setError("Failed to generate content. Please try again.");
     } finally {
       setLoading(false);
+      setProgress(100);
     }
   };
 
   const handleTitleSelect = (title) => {
-    const formattedTitle = title.replace(/^\d+\.\s*/, '').replace(/\*\*/g, ''); // Remove the number at the beginning and asterisks
+    const formattedTitle = title.replace(/^\d+\.\s*/, "").replace(/\*\*/g, "");
     setSelectedTitle(formattedTitle);
     onSelectTitle(formattedTitle);
     localStorage.setItem("selectedTitle", formattedTitle);
@@ -74,14 +96,11 @@ const GenerateTitlesComponent = ({ topic, onSelectTitle }) => {
     localStorage.removeItem("selectedTitle");
   };
 
-  const parseBoldText = (text) => {
-    return text.split("**").map((chunk, index) => {
-      return <span key={index}>{chunk}</span>;
-    });
-  };
+  const parseBoldText = (text) =>
+    text.split("**").map((chunk, index) => <span key={index}>{chunk}</span>);
 
   return (
-    <div className="w-full px-4 relative">
+    <Container className="w-full flex flex-col">
       <Group direction="column" spacing="sm">
         <TextInput
           placeholder="Enter context (optional)"
@@ -96,41 +115,72 @@ const GenerateTitlesComponent = ({ topic, onSelectTitle }) => {
           label="Number of Titles"
           min={1}
           max={20}
-          className="mt-2"
+          className="mt-2 max-w-fit"
+        />
+        <Select
+          label="Select Model"
+          placeholder="Pick one"
+          value={model}
+          onChange={setModel}
+          data={[
+            { value: "gemini-1.5-flash", label: "Gemini 1.5 Flash" },
+            { value: "gemini-1.5-pro", label: "Gemini 1.5 Pro" },
+          ]}
+          className="lg:mt-2 md:mt-2"
         />
         <Group position="apart" grow>
-        <Button onClick={generateContent} className="lg:mt-8 md:mt-8 max-w-fit relative">
-  Generate Titles
-  <LoadingOverlay visible={loading} />
-</Button>
-
-         
-         
+          <Button
+            onClick={generateContent}
+            className="lg:mt-2 md:mt-6 max-w-fit relative"
+          >
+            Generate Titles
+            <LoadingOverlay visible={loading} />
+          </Button>
           <Button
             onClick={handleClearTitles}
             color="red"
             variant="outline"
             leftIcon={<Trash size={16} />}
             disabled={!generatedTitles.length}
-            className="lg:mt-8 md:mt-8"
-          > 
+            className="lg:mt-2 md:mt-2"
+          >
             Clear Titles
           </Button>
         </Group>
       </Group>
       {error && (
-        <Notification icon={<X size={18} />} color="red" title="Error" disallowClose>
+        <Notification
+          icon={<X size={18} />}
+          color="red"
+          title="Error"
+          disallowClose
+        >
           {error}
-          <Button onClick={generateContent} size="xs" color="red" variant="light" mt="sm">
+          <Button
+            onClick={generateContent}
+            size="xs"
+            color="red"
+            variant="light"
+            mt="sm"
+          >
             Retry
           </Button>
         </Notification>
       )}
+      {loading && <Progress value={progress} mt="sm" animate />}
       {generatedTitles.length > 0 && (
         <div className="mt-4 px-3 ">
           {generatedTitles.map((title, index) => (
-            <div key={index} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <span 
+            <div
+              key={index}
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                padding: "0.5em 0",
+              }}
+            >
+              <span
                 style={{ flexGrow: 1, cursor: "pointer" }}
                 onClick={() => handleTitleSelect(title)}
               >
@@ -138,9 +188,14 @@ const GenerateTitlesComponent = ({ topic, onSelectTitle }) => {
               </span>
               <CopyButton value={title}>
                 {({ copied, copy }) => (
-                  <ActionIcon onClick={copy} color={copied ? "teal" : "gray"} >
-                    {copied ? <Check size={16} /> : <Copy size={16} />}
-                  </ActionIcon>
+                  <Tooltip label={copied ? "Copied" : "Copy"} withArrow>
+                    <ActionIcon
+                      onClick={copy}
+                      color={copied ? "teal" : "gray"}
+                    >
+                      {copied ? <Check size={16} /> : <Copy size={16} />}
+                    </ActionIcon>
+                  </Tooltip>
                 )}
               </CopyButton>
             </div>
@@ -164,7 +219,7 @@ const GenerateTitlesComponent = ({ topic, onSelectTitle }) => {
           padding-bottom: 16px;
         }
       `}</style>
-    </div>
+    </Container>
   );
 };
 

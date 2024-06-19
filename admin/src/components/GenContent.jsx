@@ -1,26 +1,21 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Button, Notification, TextInput, Group, LoadingOverlay, Text } from "@mantine/core";
-import { X, Refresh, Copy } from "tabler-icons-react";
+import { X, Refresh, Copy, Check } from "tabler-icons-react";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import EditorComponent from "./EditorComponent";
 
 const apiKey = process.env.REACT_APP_GOOGLE_API_KEY;
 const genAI = new GoogleGenerativeAI(apiKey);
- 
+
 const GenContent = ({ title, setEditorContent }) => {
   const [generatedContent, setGeneratedContent] = useState("");
   const [error, setError] = useState(null);
   const [context, setContext] = useState("");
   const [loading, setLoading] = useState(false);
-  const [generationCount, setGenerationCount] = useState(0); 
+  const [generationCount, setGenerationCount] = useState(0);
+  const [copySuccess, setCopySuccess] = useState(false);
 
-  useEffect(() => { 
-    if (title) {
-      generateContent();
-    }
-  }, [title]);
-
-  const generateContent = async () => {
+  const generateContent = useCallback(async () => {
     if (!title) {
       setError("Please select a title before generating content.");
       return;
@@ -30,9 +25,7 @@ const GenContent = ({ title, setEditorContent }) => {
     setError(null);
     try {
       const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-      const prompt = `Generate a detailed content based on the title: "${title}". ${
-        context ? `Context: ${context}` : ""
-      }`;
+      const prompt = `Generate a detailed content based on the title: "${title}". ${context ? `Context: ${context}` : ""}`;
       const result = await model.generateContent(prompt);
       const response = result.response;
       const text = await response.text();
@@ -46,11 +39,13 @@ const GenContent = ({ title, setEditorContent }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [title, context, setEditorContent]);
 
-  const handleRegenerate = () => {
-    generateContent();
-  };
+  useEffect(() => {
+    if (title) {
+      generateContent();
+    }
+  }, [title, generateContent]);
 
   const filterAndStyleContent = (content) => {
     const filteredContent = content
@@ -62,11 +57,15 @@ const GenContent = ({ title, setEditorContent }) => {
   };
 
   const copyToClipboard = () => {
-    navigator.clipboard.writeText(generatedContent);
-    Notification.info({
-      title: "Content copied",
-      message: "The generated content has been copied to the clipboard.",
-      icon: <Copy size={18} />,
+    navigator.clipboard.writeText(generatedContent).then(() => {
+      setCopySuccess(true);
+      setTimeout(() => setCopySuccess(false), 2000);
+    }).catch(() => {
+      Notification.error({
+        title: "Copy Failed",
+        message: "Failed to copy content to clipboard.",
+        icon: <X size={18} />,
+      });
     });
   };
 
@@ -85,9 +84,11 @@ const GenContent = ({ title, setEditorContent }) => {
           className="lg:mt-8 md:mt-8 max-w-fit relative"
         >
           Generate Content
-          <LoadingOverlay visible={loading} color="#ffffff" opacity={0.7}>
-            <div className="loading-spinner"></div>
-          </LoadingOverlay>
+          {loading && (
+            <LoadingOverlay visible={loading} color="#ffffff" opacity={0.7}>
+              <div className="loading-spinner"></div>
+            </LoadingOverlay>
+          )}
         </Button>
       </Group>
       {error && (
@@ -116,7 +117,7 @@ const GenContent = ({ title, setEditorContent }) => {
         />
       </div>
       <Button
-        onClick={handleRegenerate}
+        onClick={generateContent}
         variant="light"
         leftIcon={<Refresh size={16} />}
         fullWidth
@@ -127,11 +128,12 @@ const GenContent = ({ title, setEditorContent }) => {
       <Button
         onClick={copyToClipboard}
         variant="light"
-        leftIcon={<Copy size={16} />}
+        leftIcon={copySuccess ? <Check size={16} /> : <Copy size={16} />}
         fullWidth
         mt="sm"
+        color={copySuccess ? "green" : "blue"}
       >
-        Copy Content
+        {copySuccess ? "Copied" : "Copy Content"}
       </Button>
       <Text mt="sm">Generation Count: {generationCount}</Text>
       <style jsx>{`
